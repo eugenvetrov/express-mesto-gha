@@ -32,7 +32,7 @@ const createCard = (req, res, next) => {
 };
 
 const likeCard = (req, res, next) => {
-  if (req.params.cardId instanceof mongoose.Schema.Types.ObjectId !== true) {
+  if (!mongoose.Types.ObjectId.isValid(req.params.cardId)) {
     next(new BadRequestError('Передаваемые данные не валидны'));
   }
   Card.findByIdAndUpdate(
@@ -52,7 +52,7 @@ const likeCard = (req, res, next) => {
 };
 
 const dislikeCard = (req, res, next) => {
-  if (req.params.cardId instanceof mongoose.Schema.Types.ObjectId !== true) {
+  if (!mongoose.Types.ObjectId.isValid(req.params.cardId)) {
     next(new BadRequestError('Передаваемые данные не валидны'));
   }
   Card.findByIdAndUpdate(

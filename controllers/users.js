@@ -31,7 +31,7 @@ const createUser = (req, res, next) => {
 };
 
 const getUserById = (req, res, next) => {
-  if (req.params.userId instanceof mongoose.Schema.Types.ObjectId !== true) {
+  if (!mongoose.Types.ObjectId.isValid(req.params.userId)) {
     next(new BadRequestError('Передаваемые данные не валидны'));
   }
   User.findById(req.params.userId)
@@ -39,7 +39,7 @@ const getUserById = (req, res, next) => {
       if (!user) {
         next(new NotFoundError('Пользователь не найден'));
       }
-      res.send({ data: user });
+      res.status(200).send({ data: user });
     })
     .catch(() => {
       next(new ServerError());
