@@ -21,6 +21,12 @@ app.use((req, res, next) => {
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
+const errorHandler = (err, req, res, next) => {
+  res.status(err.code).send(err.message);
+};
+
+app.use(errorHandler);
+
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
 });
