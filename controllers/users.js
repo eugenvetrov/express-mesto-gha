@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../models/user');
 const ServerError = require('../errors/server');
 const ConflictError = require('../errors/conflict');
@@ -7,7 +8,7 @@ const BadRequestError = require('../errors/badRequest');
 const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => next(new ServerError()));
+    .catch(() => next(new ServerError()));
 };
 
 const createUser = (req, res, next) => {
@@ -30,6 +31,9 @@ const createUser = (req, res, next) => {
 };
 
 const getUserById = (req, res, next) => {
+  if (req.params.userId instanceof mongoose.Schema.Types.ObjectId !== true) {
+    next(new BadRequestError('Передаваемые данные не валидны'));
+  }
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
@@ -37,7 +41,7 @@ const getUserById = (req, res, next) => {
       }
       res.send({ data: user });
     })
-    .catch((err) => {
+    .catch(() => {
       next(new ServerError());
     });
 };

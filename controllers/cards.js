@@ -79,7 +79,7 @@ const deleteCardById = (req, res, next) => {
       }
       res.send({ data: card });
     })
-    .catch((err) => {
+    .catch(() => {
       next(new ServerError());
     });
 };

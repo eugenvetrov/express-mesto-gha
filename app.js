@@ -23,6 +23,7 @@ app.use('/cards', require('./routes/cards'));
 
 const errorHandler = (err, req, res, next) => {
   res.status(err.code).send(err.message);
+  next();
 };
 
 app.use(errorHandler);
