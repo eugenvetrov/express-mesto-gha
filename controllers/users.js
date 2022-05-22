@@ -23,7 +23,7 @@ const createUser = (req, res, next) => {
       }
       if (err.code === 11000) {
         next(
-          new ConflictError('Данный пользователь уже существует в базе данных')
+          new ConflictError('Данный пользователь уже существует в базе данных'),
         );
       }
       next(new ServerError());
@@ -55,7 +55,7 @@ const updateUser = (req, res, next) => {
       new: true,
       runValidators: true,
       upsert: true,
-    }
+    },
   )
     .then((user) => {
       if (!user) {
@@ -81,7 +81,7 @@ const updateUserAvatar = (req, res, next) => {
       new: true,
       runValidators: true,
       upsert: true,
-    }
+    },
   )
     .then((user) => {
       if (!user) {
