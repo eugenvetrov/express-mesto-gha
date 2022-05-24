@@ -23,17 +23,18 @@ const createCard = (req, res, next) => {
       if (err.name === 'ValidationError') {
         const fields = Object.keys(err.errors).join(', ');
         next(new BadRequestError(`Поле ${fields} заполнено некорректно`));
-      }
-      if (err.code === 11000) {
+      } else if (err.code === 11000) {
         next(new ConflictError('Данная карточка уже существует в базе данных'));
+      } else {
+        next(new ServerError());
       }
-      next(new ServerError());
     });
 };
 
 const likeCard = (req, res, next) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.cardId)) {
     next(new BadRequestError('Передаваемые данные не валидны'));
+    return;
   }
   Card.findByIdAndUpdate(
     req.params.cardId,
@@ -43,8 +44,7 @@ const likeCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         next(new NotFoundError('Карточка не найдена'));
-      }
-      res.send({ data: card });
+      } else { res.send({ data: card }); }
     })
     .catch(() => {
       next(new ServerError());
@@ -54,6 +54,7 @@ const likeCard = (req, res, next) => {
 const dislikeCard = (req, res, next) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.cardId)) {
     next(new BadRequestError('Передаваемые данные не валидны'));
+    return;
   }
   Card.findByIdAndUpdate(
     req.params.cardId,
@@ -63,8 +64,9 @@ const dislikeCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         next(new NotFoundError('Карточка не найдена'));
+      } else {
+        res.send({ data: card });
       }
-      res.send({ data: card });
     })
     .catch(() => {
       next(new ServerError());
@@ -74,6 +76,7 @@ const dislikeCard = (req, res, next) => {
 const deleteCardById = (req, res, next) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.cardId)) {
     next(new BadRequestError('Передаваемые данные не валидны'));
+    return;
   }
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {

@@ -20,26 +20,26 @@ const createUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         const fields = Object.keys(err.errors).join(', ');
         next(new BadRequestError(`Поле ${fields} заполнено некорректно`));
-      }
-      if (err.code === 11000) {
+      } else if (err.code === 11000) {
         next(
           new ConflictError('Данный пользователь уже существует в базе данных'),
         );
-      }
-      next(new ServerError());
+      } else { next(new ServerError()); }
     });
 };
 
 const getUserById = (req, res, next) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.userId)) {
     next(new BadRequestError('Передаваемые данные не валидны'));
+    return;
   }
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
         next(new NotFoundError('Пользователь не найден'));
+      } else {
+        res.status(200).send({ data: user });
       }
-      res.status(200).send({ data: user });
     })
     .catch(() => {
       next(new ServerError());
@@ -60,15 +60,17 @@ const updateUser = (req, res, next) => {
     .then((user) => {
       if (!user) {
         next(new NotFoundError('Пользователь не найден'));
+      } else {
+        res.send({ data: user });
       }
-      res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const fields = Object.keys(err.errors).join(', ');
         next(new BadRequestError(`Поле ${fields} заполнено некорректно`));
+      } else {
+        next(new ServerError());
       }
-      next(new ServerError());
     });
 };
 
@@ -86,15 +88,17 @@ const updateUserAvatar = (req, res, next) => {
     .then((user) => {
       if (!user) {
         next(new NotFoundError('Пользователь не найден'));
+      } else {
+        res.send({ data: user });
       }
-      res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const fields = Object.keys(err.errors).join(', ');
         next(new BadRequestError(`Поле ${fields} заполнено некорректно`));
+      } else {
+        next(new ServerError());
       }
-      next(new ServerError());
     });
 };
 
