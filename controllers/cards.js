@@ -80,7 +80,7 @@ const deleteCardById = (req, res, next) => {
       if (!card) {
         next(new NotFoundError('Карточка не найдена'));
       } else {
-        res.send('Карточка удалена');
+        res.send({ message: 'Карточка удалена' });
       }
     })
     .catch(() => {
