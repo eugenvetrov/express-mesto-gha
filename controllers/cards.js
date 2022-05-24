@@ -72,12 +72,15 @@ const dislikeCard = (req, res, next) => {
 };
 
 const deleteCardById = (req, res, next) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.cardId)) {
+    next(new BadRequestError('Передаваемые данные не валидны'));
+  }
+
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
         next(new NotFoundError('Карточка не найдена'));
       }
-      res.send({ data: card });
     })
     .catch(() => {
       next(new ServerError());
