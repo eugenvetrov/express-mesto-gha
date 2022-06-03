@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const ServerError = require('../errors/server');
 const ConflictError = require('../errors/conflict');
@@ -12,19 +13,35 @@ const getUsers = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  const { name, about, avatar } = req.body;
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
 
-  User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
+  bcrypt
+    .hash(password, 10)
+    .then((hash) => {
+      User.validate({
+        name, about, avatar, email, password: hash,
+      });
+      return hash;
+    })
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
+    .then((user) => {
+      res.send({ data: user });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const fields = Object.keys(err.errors).join(', ');
-        next(new BadRequestError(`Поле ${fields} заполнено некорректно`));
+        next(new BadRequestError(`Поле ${fields} заполнено некорректно. ${err.errors.email}`));
       } else if (err.code === 11000) {
         next(
           new ConflictError('Данный пользователь уже существует в базе данных'),
         );
-      } else { next(new ServerError()); }
+      } else {
+        next(new ServerError(err.message));
+      }
     });
 };
 
