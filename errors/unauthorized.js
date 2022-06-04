@@ -1,10 +1,10 @@
-const UNATHORIZED = 401;
+const UNATHORIZED_CODE = 401;
 class Unauthorized extends Error {
   constructor(
     message = 'Простите, не удалось авторизоваться',
   ) {
     super(message);
-    this.code = UNATHORIZED;
+    this.code = UNATHORIZED_CODE;
   }
 }
 

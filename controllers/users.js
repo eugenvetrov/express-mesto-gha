@@ -35,8 +35,7 @@ const checkUser = (req, res, next) => {
     } else {
       res.send({ data: user });
     }
-  }).catch((err) => {
-    console.log(err);
+  }).catch(() => {
     next(new ServerError());
   });
 };

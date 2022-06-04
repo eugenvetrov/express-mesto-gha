@@ -4,6 +4,7 @@ const ServerError = require('../errors/server');
 const ConflictError = require('../errors/conflict');
 const NotFoundError = require('../errors/notFound');
 const BadRequestError = require('../errors/badRequest');
+const Forbidden = require('../errors/forbidden');
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -78,7 +79,19 @@ const deleteCardById = (req, res, next) => {
     next(new BadRequestError('Передаваемые данные не валидны'));
     return;
   }
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId).then((card) => {
+    if (!card) {
+      next(new NotFoundError('Карточка не найдена'));
+    }
+    return card;
+  })
+    .then((card) => {
+      if (card.owner.toString() !== req.user._id) {
+        next(new Forbidden());
+        return null;
+      }
+      return Card.findByIdAndRemove(req.params.cardId);
+    })
     .then((card) => {
       if (!card) {
         next(new NotFoundError('Карточка не найдена'));
@@ -86,7 +99,8 @@ const deleteCardById = (req, res, next) => {
         res.send({ message: 'Карточка удалена' });
       }
     })
-    .catch(() => {
+    .catch((err) => {
+      console.log(err);
       next(new ServerError());
     });
 };
