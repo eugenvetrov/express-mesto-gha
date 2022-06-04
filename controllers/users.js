@@ -28,6 +28,19 @@ const getUserById = (req, res, next) => {
     });
 };
 
+const checkUser = (req, res, next) => {
+  User.findById(req.user._id).then((user) => {
+    if (!user) {
+      next(new NotFoundError('Пользователь не найден'));
+    } else {
+      res.send({ data: user });
+    }
+  }).catch((err) => {
+    console.log(err);
+    next(new ServerError());
+  });
+};
+
 const updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
@@ -87,6 +100,7 @@ const updateUserAvatar = (req, res, next) => {
 module.exports = {
   getUsers,
   getUserById,
+  checkUser,
   updateUser,
   updateUserAvatar,
 };
