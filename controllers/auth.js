@@ -14,7 +14,7 @@ const createUser = (req, res, next) => {
     .hash(password, 10)
     .then((hash) => {
       User.validate({
-        name, about, avatar, email, password: hash,
+        name, about, avatar, email, password,
       });
       return hash;
     })
@@ -27,7 +27,7 @@ const createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const fields = Object.keys(err.errors).join(', ');
-        next(new BadRequestError(`Поле ${fields} заполнено некорректно. ${err.errors.email}`));
+        next(new BadRequestError(`Поле ${fields} заполнено некорректно. ${err.errors.email ? err.errors.email : ''}${err.errors.password ? err.errors.password : ''}`));
       } else if (err.code === 11000) {
         next(
           new ConflictError('Данный пользователь уже существует в базе данных'),

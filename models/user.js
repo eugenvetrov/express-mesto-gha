@@ -18,8 +18,13 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 8,
+    minlength: 2,
     select: false,
+    validate: [{
+      validator: (password) => password > 2,
+      message: 'Пожалуйста, введите корректный пароль',
+    },
+    ],
   },
   name: {
     type: String,
