@@ -4,7 +4,6 @@ const User = require('../models/user');
 const ServerError = require('../errors/server');
 const ConflictError = require('../errors/conflict');
 const BadRequestError = require('../errors/badRequest');
-const NotFoundError = require('../errors/notFound');
 
 const createUser = (req, res, next) => {
   const {
@@ -45,17 +44,13 @@ const createUser = (req, res, next) => {
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
-  return User.findUserByCredentials(email, password)
+  User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        next(new NotFoundError('Пользователь не найден'));
-      } else {
-        const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-        res.status(200).cookie('token', token, { httpOnly: true }).send({ message: 'Авторизация прошла успешно' });
-      }
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      res.status(200).cookie('token', token, { httpOnly: true }).send({ message: 'Авторизация прошла успешно' });
     })
-    .catch(() => {
-      next(new ServerError());
+    .catch((err) => {
+      next(err);
     });
 };
 

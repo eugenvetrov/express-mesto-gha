@@ -52,17 +52,17 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password, next) {
+userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        next(new NotFoundError('Пользователь не найден'));
+        return Promise.reject(new NotFoundError('Пользователь не найден'));
       }
 
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            next(new Unauthorized());
+            return Promise.reject(new Unauthorized());
           }
           return user;
         });
