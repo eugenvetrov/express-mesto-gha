@@ -8,8 +8,8 @@ const {
 
 router.post('/signup', celebrate({
   [Segments.BODY]: {
-    email: Joi.string().required(),
-    password: Joi.string().required(),
+    email: Joi.string().min(2).max(30).required(),
+    password: Joi.string().min(2).max(30).required(),
   },
 }), createUser);
 router.post('/signin', login);
