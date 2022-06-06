@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const {
-  celebrate, Joi, Segments,
+  celebrate, Joi,
 } = require('celebrate');
 const {
   getUsers,
@@ -13,7 +13,7 @@ const {
 router.get('/', getUsers);
 router.get('/me', checkUser);
 router.get('/:userId', celebrate({
-  [Segments.PARAMS]: {
+  params: {
     userId: Joi.string().required(),
   },
 }), getUserById);
