@@ -70,6 +70,7 @@ const updateUser = (req, res, next) => {
 
 const updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
+
   User.findByIdAndUpdate(
     req.user._id,
     { avatar },
@@ -88,8 +89,7 @@ const updateUserAvatar = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        const fields = Object.keys(err.errors).join(', ');
-        next(new BadRequestError(`Поле ${fields} заполнено некорректно`));
+        next(new BadRequestError(`${err.errors.avatar}`));
       } else {
         next(new ServerError());
       }

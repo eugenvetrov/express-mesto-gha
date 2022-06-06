@@ -99,8 +99,7 @@ const deleteCardById = (req, res, next) => {
         res.send({ message: 'Карточка удалена' });
       }
     })
-    .catch((err) => {
-      console.log(err);
+    .catch(() => {
       next(new ServerError());
     });
 };
