@@ -20,6 +20,6 @@ router.post('/signin', celebrate({
     email: Joi.string().required().email(),
     password: Joi.string().required(),
   },
-}) login);
+}), login);
 
 module.exports = router;
