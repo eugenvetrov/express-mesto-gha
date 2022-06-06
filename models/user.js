@@ -18,10 +18,9 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 2,
     select: false,
     validate: [{
-      validator: (password) => password > 2,
+      validator: (password) => (!!password),
       message: 'Пожалуйста, введите корректный пароль',
     },
     ],
