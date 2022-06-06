@@ -13,7 +13,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(errors());
 app.use('/', require('./routes/index'));
 app.use('/users', auth, require('./routes/users'));
 
@@ -27,7 +26,7 @@ const errorHandler = (err, req, res, next) => {
   res.status(err.code).send({ message: err.message });
   next();
 };
-
+app.use(errors());
 app.use(errorHandler);
 
 app.listen(PORT);
