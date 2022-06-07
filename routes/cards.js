@@ -14,7 +14,7 @@ router.get('/', getCards);
 router.post('/', celebrate({
   body: {
     name: Joi.string().min(2).max(30).required(),
-    link: Joi.string().regex(/^https?:\/\/(w{3})?[\w0-9-._~:/?#\[\]@!$&'()*+,;=]{1,}#?/).required(),
+    link: Joi.string().regex(/^https?:\/\/(w{3})?[\w0-9-._~:/?#\[\]@!$&'()*+,;=]{1,}#?/).required(), // eslint-disable-line
   },
 }), createCard);
 router.put('/:cardId/likes', celebrate({

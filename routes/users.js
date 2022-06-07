@@ -14,7 +14,7 @@ router.get('/', getUsers);
 router.get('/me', checkUser);
 router.get('/:userId', celebrate({
   params: {
-    userId: Joi.string().required(),
+    userId: Joi.string().regex(/^[a-f\d]{24}$/).required(), // eslint-disable-line
   },
 }), getUserById);
 router.patch('/me', celebrate({
