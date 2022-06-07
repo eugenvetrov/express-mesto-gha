@@ -50,7 +50,9 @@ const login = (req, res, next) => {
       res.status(200).cookie('token', token, { httpOnly: true }).send({ message: 'Авторизация прошла успешно' });
     })
     .catch((err) => {
-      next(err);
+      if (err.code === 401 || err.code === 403 || err.code === 404) {
+        next(err);
+      } else { next(new ServerError()); }
     });
 };
 
