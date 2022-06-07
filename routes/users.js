@@ -17,7 +17,16 @@ router.get('/:userId', celebrate({
     userId: Joi.string().required(),
   },
 }), getUserById);
-router.patch('/me', updateUser);
-router.patch('/me/avatar', updateUserAvatar);
+router.patch('/me', celebrate({
+  body: {
+    name: Joi.string().min(2).max(30).required(),
+    about: Joi.string().min(2).max(30).required(),
+  },
+}), updateUser);
+router.patch('/me/avatar', celebrate({
+  body: {
+    avatar: Joi.string().regex(/^https?:\/\/(w{3})?[\w0-9-._~:/?#\[\]@!$&'()*+,;=]{1,}#?/).required(), // eslint-disable-line
+  },
+}), updateUserAvatar);
 
 module.exports = router;
