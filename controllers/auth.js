@@ -4,6 +4,7 @@ const User = require('../models/user');
 const ServerError = require('../errors/server');
 const ConflictError = require('../errors/conflict');
 const BadRequestError = require('../errors/badRequest');
+const Unauthorized = require('../errors/unauthorized');
 
 const createUser = (req, res, next) => {
   const {
@@ -46,6 +47,7 @@ const login = (req, res, next) => {
 
   User.findUserByCredentials(email, password)
     .then((user) => {
+      if (!user) { next(new Unauthorized('Ошибка в почте или пароле.')); }
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.status(200).cookie('jwt', token, { httpOnly: true }).send({ token });
     })
