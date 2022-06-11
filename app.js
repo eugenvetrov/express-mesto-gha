@@ -25,7 +25,7 @@ app.use('*', auth, (req, res, next) => {
 });
 
 const errorHandler = (err, req, res, next) => {
-  const statusCode = res.statusCode || 500;
+  const statusCode = err.code || 500;
   const message = statusCode === 500 ? 'На сервере произошла ошибка' : err.message;
   res.status(statusCode).send({ message });
   next();
