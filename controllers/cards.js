@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const Card = require('../models/card');
 const ServerError = require('../errors/server');
 const ConflictError = require('../errors/conflict');
@@ -23,7 +22,7 @@ const createCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const fields = Object.keys(err.errors).join(', ');
-        next(new BadRequestError(`Поле ${fields} заполнено некорректно`));
+        next(new BadRequestError(`Поле ${fields} заполнено некорректно. ${err.errors.link}`));
       } else if (err.code === 11000) {
         next(new ConflictError('Данная карточка уже существует в базе данных'));
       } else {
@@ -33,10 +32,6 @@ const createCard = (req, res, next) => {
 };
 
 const likeCard = (req, res, next) => {
-  if (!mongoose.Types.ObjectId.isValid(req.params.cardId)) {
-    next(new BadRequestError('Передаваемые данные не валидны'));
-    return;
-  }
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -53,10 +48,6 @@ const likeCard = (req, res, next) => {
 };
 
 const dislikeCard = (req, res, next) => {
-  if (!mongoose.Types.ObjectId.isValid(req.params.cardId)) {
-    next(new BadRequestError('Передаваемые данные не валидны'));
-    return;
-  }
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -75,10 +66,6 @@ const dislikeCard = (req, res, next) => {
 };
 
 const deleteCardById = (req, res, next) => {
-  if (!mongoose.Types.ObjectId.isValid(req.params.cardId)) {
-    next(new BadRequestError('Передаваемые данные не валидны'));
-    return;
-  }
   Card.findById(req.params.cardId).then((card) => {
     if (!card) {
       next(new NotFoundError('Карточка не найдена'));

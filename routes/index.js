@@ -2,15 +2,24 @@ const router = require('express').Router();
 const {
   celebrate, Joi,
 } = require('celebrate');
+const validator = require('validator');
 const {
   createUser, login,
 } = require('../controllers/auth');
+const BadRequestError = require('../errors/badRequest');
+
+const validateURL = (value) => {
+  if (!validator.isURL(value, { require_protocol: true })) {
+    throw new BadRequestError('Неправильный формат ссылки');
+  }
+  return value;
+};
 
 router.post('/signup', celebrate({
   body: {
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(new RegExp(/^https?:\/\/(w{3})?[\w0-9-._~:/?#\[\]@!$&'()*+,;=]{1,}#?/)),  // eslint-disable-line
+    avatar: Joi.string().custom(validateURL),
     email: Joi.string().required().email(),
     password: Joi.string().required(),
   },

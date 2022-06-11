@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const User = require('../models/user');
 const ServerError = require('../errors/server');
 const NotFoundError = require('../errors/notFound');
@@ -11,10 +10,6 @@ const getUsers = (req, res, next) => {
 };
 
 const getUserById = (req, res, next) => {
-  if (!mongoose.Types.ObjectId.isValid(req.params.userId)) {
-    next(new BadRequestError('Передаваемые данные не валидны'));
-    return;
-  }
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
@@ -48,7 +43,6 @@ const updateUser = (req, res, next) => {
     {
       new: true,
       runValidators: true,
-      upsert: true,
     },
   )
     .then((user) => {
@@ -77,7 +71,6 @@ const updateUserAvatar = (req, res, next) => {
     {
       new: true,
       runValidators: true,
-      upsert: true,
     },
   )
     .then((user) => {

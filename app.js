@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
 const NotFoundError = require('./errors/notFound');
 const auth = require('./middlewares/auth');
@@ -10,6 +11,7 @@ const app = express();
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -18,12 +20,14 @@ app.use('/users', auth, require('./routes/users'));
 
 app.use('/cards', auth, require('./routes/cards'));
 
-app.use('*', (req, res, next) => {
+app.use('*', auth, (req, res, next) => {
   next(new NotFoundError('Такой запрос не найден'));
 });
 
 const errorHandler = (err, req, res, next) => {
-  res.status(err.code).send({ message: err.message });
+  const statusCode = res.statusCode || 500;
+  const message = statusCode === 500 ? 'На сервере произошла ошибка' : err.message;
+  res.status(statusCode).send({ message });
   next();
 };
 app.use(errors());

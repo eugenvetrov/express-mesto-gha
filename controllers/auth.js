@@ -47,12 +47,10 @@ const login = (req, res, next) => {
   User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-      res.status(200).cookie('token', token, { httpOnly: true }).send({ token });
+      res.status(200).cookie('jwt', token, { httpOnly: true }).send({ token });
     })
-    .catch((err) => {
-      if (err.code === 401 || err.code === 403 || err.code === 404) {
-        next(err);
-      } else { next(new ServerError()); }
+    .catch(() => {
+      next(new ServerError());
     });
 };
 
